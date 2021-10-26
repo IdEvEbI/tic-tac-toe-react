@@ -5,19 +5,12 @@ import './index.css'
 /**
  * 方块按钮组件
  */
-class Square extends React.Component {
-  state = {
-    // 记录当前按钮被点击
-    value: null,
-  }
-
-  render() {
-    return (
-      <button className='square' onClick={() => this.props.onClick()}>
-        {this.props.value}
-      </button>
-    )
-  }
+function Square(props) {
+  return (
+    <button className='square' onClick={() => props.onClick()}>
+      {props.value}
+    </button>
+  )
 }
 
 /**
