@@ -16,13 +16,49 @@ function Square(props) {
 /**
  * 棋盘组件
  */
-class Board extends React.Component {
+function Board(props) {
+  function renderSquare(i) {
+    return (
+      <Square
+        value={props.squares[i]}
+        onClick={() => props.onClick(i)}
+      />
+    )
+  }
+
+  return (
+    <div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
+      </div>
+      <div className="board-row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 游戏组件
+ */
+class Game extends React.Component {
   state = {
-    squares: Array(9).fill(null),
+    history: [{
+      squares: Array(9).fill(null),
+    }],
     xIsNext: true,
   }
 
-  calculateWinner() {
+  calculateWinner(squares) {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -33,43 +69,43 @@ class Board extends React.Component {
       [0, 4, 8],
       [2, 4, 6],
     ]
-    const list = this.state.squares
 
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i]
-      if (list[a] && list[a] === list[b] && list[a] === list[c]) {
-        return list[a]
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a]
       }
     }
     return null
   }
 
   handleClick(i) {
-    if (this.calculateWinner()) {
+    const history = this.state.history
+    const current = history[history.length - 1]
+    const squares = current.squares.slice()
+
+    if (this.calculateWinner(squares)) {
       return console.log('已经分出胜负')
     }
 
-    if (this.state.squares[i]) {
+    if (squares[i]) {
       return console.log(`点击 ${i} 位置已经有棋子`)
     }
 
-    const value = this.state.xIsNext ? 'X' : 'O'
+    squares[i] = this.state.xIsNext ? 'X' : 'O'
 
     this.setState({
-      squares: this.state.squares.map((item, index) => i === index ? value : item),
+      history: history.concat([{
+        squares: squares,
+      }]),
       xIsNext: !this.state.xIsNext
     })
   }
 
-  renderSquare(i) {
-    return <Square
-      value={this.state.squares[i]}
-      onClick={() => this.handleClick(i)}
-    />
-  }
-
   render() {
-    const winner = this.calculateWinner()
+    const history = this.state.history
+    const current = history[history.length - 1]
+    const winner = this.calculateWinner(current.squares)
 
     let status
     if (winner) {
@@ -79,40 +115,15 @@ class Board extends React.Component {
     }
 
     return (
-      <div>
-        <div className="status">{status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    )
-  }
-}
-
-/**
- * 游戏组件
- */
-class Game extends React.Component {
-  render() {
-    return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>{status}</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
