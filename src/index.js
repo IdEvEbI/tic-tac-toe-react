@@ -2,19 +2,30 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 
+/**
+ * 方块按钮组件
+ */
 class Square extends React.Component {
+  state = {
+    // 记录当前按钮被点击
+    value: '',
+  }
+
   render() {
     return (
-      <button className="square">
-        {/* TODO */}
+      <button className='square' onClick={() => this.setState({ value: 'X' })}>
+        {this.state.value}
       </button>
     )
   }
 }
 
+/**
+ * 棋盘组件
+ */
 class Board extends React.Component {
   renderSquare(i) {
-    return <Square />
+    return <Square value={i} />
   }
 
   render() {
@@ -43,6 +54,9 @@ class Board extends React.Component {
   }
 }
 
+/**
+ * 游戏组件
+ */
 class Game extends React.Component {
   render() {
     return (
